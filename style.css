@@ -418,6 +418,54 @@ html, body {
 .mission .mini:disabled { opacity: .4; }
 .mission .tag { font-size: 11px; font-weight: 800; color: var(--ink-soft); white-space: nowrap; }
 
+/* ---- 撮影モード（?rec=1）---- */
+body.rec916 { background: #2b1f24; }
+body.rec916 #app { width: min(100vw, calc(100vh * 9 / 16)); max-width: none; }
+body.recNoUi #btnMute, body.recNoUi .title-bottom { display: none; }
+#recCap {
+  position: absolute; z-index: 30; left: 12px; right: 12px; top: calc(14% + env(safe-area-inset-top)); text-align: center; pointer-events: none;
+}
+#recCap b {
+  display: block; font-size: clamp(26px, 8.5vw, 40px); line-height: 1.15; color: #fff7ee;
+  -webkit-text-stroke: 7px var(--ink); paint-order: stroke fill; text-shadow: 0 5px 0 #b9786a;
+}
+#recCap small {
+  display: inline-block; margin-top: 8px; font-size: 15px; font-weight: 800; color: #fff; background: var(--pink-deep);
+  border: 2px solid var(--ink); border-radius: 999px; padding: 2px 14px;
+}
+#recCap.pop b { animation: capPop .35s cubic-bezier(.3,1.6,.5,1); }
+#recCap.low { top: 25%; }   /* プレイ中は注文の吹き出しとスクイーズの間に */
+#recCap.top { top: calc(2% + env(safe-area-inset-top)); }   /* ガチャはカードの上に */
+@keyframes capPop { from { transform: scale(.6); } to { transform: scale(1); } }
+#recTouch {
+  position: absolute; z-index: 40; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; pointer-events: none;
+  background: rgba(255,255,255,.35); border: 3px solid rgba(255,255,255,.9); box-shadow: 0 0 0 2px rgba(107,68,54,.35);
+  transition: transform .12s, opacity .2s;
+}
+#recTouch.down { transform: scale(.75); background: rgba(255,143,177,.45); }
+#recPill {
+  position: absolute; z-index: 35; left: 12px; bottom: calc(12px + env(safe-area-inset-bottom));
+  font-family: inherit; font-weight: 800; font-size: 12px; color: #fff; background: #2b1f24; border: 2px solid #fff;
+  border-radius: 999px; padding: 6px 12px; cursor: pointer; opacity: .85;
+}
+#recPanel {
+  position: absolute; z-index: 36; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom));
+  background: #fffaf3; border: 2px solid var(--ink); border-radius: 20px; padding: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.3);
+}
+.rp-head { font-weight: 800; font-size: 16px; margin-bottom: 6px; }
+.rp-head small { font-weight: 500; font-size: 11px; color: var(--ink-soft); margin-left: 8px; }
+.rp-opts { display: flex; gap: 14px; font-size: 12px; margin-bottom: 8px; }
+.rp-list { display: grid; gap: 6px; }
+.rp-row { display: flex; align-items: center; gap: 6px; background: var(--cream); border-radius: 12px; padding: 6px 8px; }
+.rp-row > div { flex: 1; font-size: 13px; }
+.rp-row small { display: block; font-size: 10.5px; color: var(--ink-soft); }
+.rp-row .mini {
+  font-family: inherit; font-weight: 800; font-size: 12px; color: #fff; cursor: pointer; white-space: nowrap;
+  border: 2px solid var(--ink); border-radius: 999px; padding: 4px 10px; background: var(--pink);
+}
+.rp-row .mini.rec { background: #e84a5f; }
+.rp-note { font-size: 10.5px; color: var(--ink-soft); margin-top: 8px; }
+
 /* gacha */
 .gacha-stage { height: 290px; display: flex; align-items: center; justify-content: center; position: relative; }
 #gachaCv { width: 290px; height: 290px; display: block; cursor: pointer; touch-action: manipulation; }

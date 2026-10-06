@@ -63,8 +63,17 @@ const ROUND_SEC = 60;
 // ============================================================
 // セーブ（ローカルのみ・失敗しても動く）
 // ============================================================
-const SAVE_KEY = 'nigisq_v1';
+// ?rec=1 で撮影モード（本番と別のセーブで、全キャラ・通貨使い放題）
+const REC = new URLSearchParams(location.search).has('rec');
+const SAVE_KEY = REC ? 'nigisq_rec' : 'nigisq_v1';
 function loadSave() {
+  if (REC) {
+    try { const j = JSON.parse(localStorage.getItem(SAVE_KEY)); if (j && j.owned) return j; } catch (e) {}
+    const owned = {}, shiny = {};
+    SQUISHIES.forEach(s => { owned[s.id] = 5; });
+    ['kuma', 'wataame', 'mari', 'mizu', 'pancake'].forEach(id => { shiny[id] = 1; });
+    return { coins: 99999, gems: 99999, best: 0, owned, shiny, kanban: 'kuma', xp: 200000, stamina: { n: 99, t: Date.now() } };
+  }
   try {
     const j = JSON.parse(localStorage.getItem(SAVE_KEY));
     if (j && j.owned) return j;
@@ -964,6 +973,9 @@ function makeBand(keys, widen = 1) {
 }
 // 特殊なお客さん（3人目以降に混ざる）
 function pickOrder() {
+  // 撮影シーン用：次の注文を指定できる
+  if (G.forceOrder) { const f = G.forceOrder; G.forceOrder = null; return f === 'spicy' ? { kind: 'spicy', key: 'spicy', text: 'それは にぎっちゃダメ！', wait: 1.6, waitMax: 1.6, lo: 0, hi: 0, c: 0, mul: 1 } : makeBand([f]); }
+  if (G.normalOnly) return makeBand();
   if (G.served >= 3) {
     const r = Math.random(), m = M();
     const wait = Math.max(0.8, m.spicyWait);
@@ -987,7 +999,9 @@ function resetSquishy() {
 function nextCustomer() {
   G.order = pickOrder();
   G.sq = G.order.kind === 'spicy' ? SPICY : pickSquishy();
-  G.shiny = G.order.kind === 'normal' && Math.random() < (G.fever > 0 ? SHINY_RATE_FEVER : SHINY_RATE) * M().shinyMul;
+  G.shiny = G.order.kind === 'normal' && (G.forceShiny || Math.random() < (G.fever > 0 ? SHINY_RATE_FEVER : SHINY_RATE) * M().shinyMul);
+  G.forceShiny = false;
+  if (G.forceSq) { G.sq = G.forceSq; G.forceSq = null; resetSquishy(); }
   resetSquishy();
   G.served++;
   const special = G.order.kind !== 'normal';
@@ -1285,6 +1299,8 @@ function update(dt) {
     const soft = G.sq.soft;
     const spd = G.mode === 'play' && G.mods ? G.mods.squeezeSpeed : 1;
     G.s = Math.max(G.s, 0) + dt * 0.55 * soft * spd * (0.55 + 1.4 * Math.max(G.s, 0));
+    // 撮影シーンの自動プレイ：ねらった強さぴったりで はなす
+    if (G.autoTarget != null && G.s >= G.autoTarget) { G.s = G.autoTarget; G.autoTarget = null; release(); }
     G.sv = 0;
     squelchUpdate(G.s, dt);
     G.holdTick += dt;
@@ -2418,6 +2434,7 @@ function addStamina(k) {
   save(); refreshStaminaUI();
 }
 function useStamina() {
+  if (REC) return true;
   const st = staminaNow();
   if (st.n < 1) return false;
   if (st.n >= STA_MAX) st.t = Date.now();   // 満タンから減らした瞬間から回復タイマー開始
@@ -2517,6 +2534,7 @@ function refreshMissionBadge() {
 // ---- 共通 ----
 let toastTimer = null;
 function toast(msg) {
+  if (REC && RECM.busy) return;   // 撮影中は お知らせを出さない
   const el = $('#toast'); el.innerHTML = msg; show('#toast', true);
   clearTimeout(toastTimer); toastTimer = setTimeout(() => show('#toast', false), 2200);
 }
@@ -2698,6 +2716,231 @@ on('#btnShare', shareResult);
 on('#btnMute', () => { ac(); setMute(!sv.mute); });
 document.querySelectorAll('button').forEach(b => b.addEventListener('pointerdown', e => e.stopPropagation()));
 $('#btnMute').textContent = sv.mute ? '♪×' : '♪';
+
+// ============================================================
+// 撮影モード（?rec=1）：見せ場の自動再生・キャプション・タッチ表示・タブ録画
+// ============================================================
+const RECM = { busy: false, rec: null, chunks: [] };
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+// 条件がそろうまで待つ（タイムアウトあり）
+const until = (fn, ms = 5000) => new Promise(res => {
+  const t0 = performance.now();
+  (function poll() { if (fn() || performance.now() - t0 > ms) res(); else setTimeout(poll, 30); })();
+});
+function recCaption(text, sub = '', ms = 0) {
+  const el = $('#recCap');
+  el.innerHTML = text ? `<b>${text}</b>${sub ? `<small>${sub}</small>` : ''}` : '';
+  el.classList.toggle('hidden', !text);
+  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+  if (ms) setTimeout(() => { if (el.innerHTML.includes(text)) el.classList.add('hidden'); }, ms);
+}
+// 指の位置（画面録画で「どこを押してるか」が分かるように）
+function touchAt(x, y, down) {
+  const el = $('#recTouch'); if (!el) return;
+  el.style.left = `${x}px`; el.style.top = `${y}px`;
+  el.classList.toggle('down', !!down); el.classList.remove('hidden');
+}
+function touchHide() { const el = $('#recTouch'); if (el) el.classList.add('hidden'); }
+// 台本用の「指」：dx は スクイーズ中心からの横ずれ（R単位）
+function fingerDown(dx = 0) {
+  const L = layout(), r = cv.getBoundingClientRect(), app = $('#app').getBoundingClientRect();
+  press(r.left + L.cx + dx * L.R);
+  touchAt(L.cx + dx * L.R + (r.left - app.left), L.baseY - L.R * 1.2 + (r.top - app.top), true);
+}
+function fingerUp() { release(); const el = $('#recTouch'); if (el) el.classList.remove('down'); setTimeout(touchHide, 250); }
+
+// プレイ中に1人分をこなす（perfect=false なら わざと強すぎ）
+async function autoServe(perfect = true) {
+  await until(() => G.mode !== 'play' || (G.order && canPress() && !G.pendingNext && G.popIn >= 1), 4000);
+  if (G.mode !== 'play') return;
+  const o = G.order;
+  if (o.kind === 'spicy') { await until(() => G.order !== o || G.mode !== 'play', 4000); return; }
+  const reps = o.kind === 'multi' ? o.need : 1;
+  for (let i = 0; i < reps; i++) {
+    await until(() => canPress() || G.mode !== 'play', 2000);
+    G.autoTarget = perfect ? o.c : Math.min(0.99, o.hi + 0.06);
+    fingerDown(o.kind === 'side' ? o.side * 0.55 : 0);
+    await until(() => !G.pressing || G.burstT > 0 || G.mode !== 'play', 4000);
+    G.autoTarget = null;
+    fingerUp();
+    await sleep(o.kind === 'multi' ? 380 : 120);
+  }
+  await until(() => G.order !== o || G.mode !== 'play', 3000);
+}
+// 撮影用のプレイ開始：開始の文字を出さず、テンポよく（にぎる速さ1.5倍）
+function startRecPlay() {
+  startGame(false, []);   // 今日のお題は かけない（注文がばらけて 見ばえがいい）
+  G.floaters = []; G.mods.squeezeSpeed *= 1.5;
+  $('#recCap').classList.add('low');
+}
+function quietTitle() { G.mode = 'over'; ['#hud', '#order', '#holdHint', '#cont', '#result'].forEach(id => show(id, false)); toTitle(); }
+
+const REC_SCENES = [
+  { id: 'burst', name: '破裂ASMR', desc: 'ゆっくり にぎって ぱーん！×3', run: async () => {
+    openRoom(); show('#room', false);
+    for (const id of ['bombo', 'pudding', 'kuma']) {
+      G.sq = SQ_BY_ID[id]; G.shiny = id === 'kuma'; resetSquishy(); SFX.pop();
+      recCaption('さいごまで にぎると…', SQ_BY_ID[id].name);
+      await sleep(900);
+      fingerDown(0.15);
+      await until(() => G.burstT > 0, 6000);
+      recCaption('ぱーん！！');
+      fingerUp();
+      await sleep(1500);
+    }
+    recCaption('');
+  } },
+  { id: 'perfect', name: 'PERFECT連続→フィーバー', desc: 'ぴったりで わたし続ける', run: async () => {
+    G.normalOnly = true;
+    startRecPlay();
+    recCaption('ちょうどいい 強さで わたせ！', 'みどりの帯で はなすと PERFECT');
+    await sleep(1600);
+    // フィーバーが終わるまで（最大20人）ぴったりで わたし続ける
+    let feverSeen = false;
+    for (let i = 0; i < 20 && G.mode === 'play'; i++) {
+      if (i === 2) recCaption('');
+      await autoServe(true);
+      if (G.fever > 0 && !feverSeen) { feverSeen = true; recCaption('フィーバー！！', 'スコア 2ばい'); }
+      if (feverSeen && G.fever > 0 && G.fever < 6) recCaption('');
+      if (feverSeen && G.fever <= 0) break;
+    }
+    await sleep(800);
+    G.normalOnly = false; recCaption(''); quietTitle();
+  } },
+  { id: 'kira', name: 'キラ個体ゲット', desc: 'レア個体が でてきて ゲット', run: async () => {
+    G.normalOnly = true;
+    startRecPlay();
+    // 2人目をキラ個体に（1人目はふつうに わたす）
+    G.forceShiny = true; G.forceSq = SQ_BY_ID.wataame; G.forceOrder = 'gyu';
+    await autoServe(true);
+    await until(() => G.shiny, 5000);
+    recCaption('…ん？', 'なんか 光ってる');
+    await sleep(500);
+    recCaption('キラ個体！？', 'PERFECTでしか ゲットできない…');
+    await sleep(1200);
+    await autoServe(true);
+    recCaption('ゲット！！', '');
+    await sleep(2000);
+    G.normalOnly = false; recCaption(''); quietTitle();
+  } },
+  { id: 'dex', name: '全キャラしょうかい', desc: '23体を 順番に にぎにぎ', run: async () => {
+    openRoom(); show('#room', false);
+    for (const s of SQUISHIES) {
+      G.sq = s; G.shiny = false; resetSquishy(); SFX.pop();
+      recCaption(s.name, `${s.rarity}${s.limited ? '・ハロウィン限定' : ''}`);
+      await sleep(450);
+      fingerDown(0); await sleep(520); fingerUp();
+      await sleep(650);
+    }
+    recCaption('ぜんぶで 23しゅるい！'); await sleep(1500); recCaption('');
+  } },
+  { id: 'gacha', name: 'ガチャ SSR昇格', desc: 'ピンク→虹色に かわる', run: async () => {
+    toTitle(); openGacha('title'); gachaKind = 'premium'; renderGachaInfo(); refreshGacha();
+    $('#recCap').classList.add('top');
+    const ownedBefore = sv.owned.wataame; sv.owned.wataame = 0;   // 動画では「NEW!」に見せる
+    recCaption('SSRが でるまで ひく！'); await sleep(1200);
+    // この1回だけ、結果をSSR＋昇格演出に固定する
+    const orig = rollGacha;
+    rollGacha = () => SQ_BY_ID.wataame;
+    const origRand = Math.random; let n = 0;
+    Math.random = () => (n++ < 1 ? 0.99 : origRand());   // キラ判定だけ外す
+    pullGacha(1);
+    Math.random = origRand; rollGacha = orig;
+    GA.upgrade = true; GA.shown = 'N';
+    recCaption('');
+    await until(() => GA.phase === 'wait', 4000); await sleep(700);
+    touchAt(gcv.getBoundingClientRect().left - $('#app').getBoundingClientRect().left + 145, gcv.getBoundingClientRect().top - $('#app').getBoundingClientRect().top + 175, true);
+    gachaTap(); recCaption('…！？'); await sleep(400); touchHide();
+    await until(() => GA.phase === 'wait', 3000); await sleep(900);
+    recCaption('きた！！');
+    touchAt(gcv.getBoundingClientRect().left - $('#app').getBoundingClientRect().left + 145, gcv.getBoundingClientRect().top - $('#app').getBoundingClientRect().top + 175, true);
+    gachaTap(); await sleep(400); touchHide();
+    await sleep(2400); recCaption(''); show('#gacha', false);
+    sv.owned.wataame = Math.max(ownedBefore, sv.owned.wataame); save(); $('#recCap').classList.remove('top');
+  } },
+];
+
+async function runScene(sc, record) {
+  if (RECM.busy) return;
+  RECM.busy = true;
+  show('#recPanel', false); show('#recPill', false);
+  if (record) { const ok = await startTabRecording(); if (!ok) { RECM.busy = false; show('#recPill', true); return; } await sleep(600); }
+  try { await sc.run(); } catch (e) { console.error(e); }
+  await sleep(500);
+  if (G.mode === 'room') { show('#room', false); toTitle(); }
+  if (record) await stopTabRecording(sc.id);
+  RECM.busy = false; recCaption(''); touchHide(); show('#recPill', true); $('#recCap').classList.remove('low');
+}
+
+// タブ録画（PCのChrome向け。スマホは本体の画面収録を使う）
+async function startTabRecording() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) { toast('このブラウザは録画できません（本体の画面収録を使ってね）'); return false; }
+  try {
+    const stream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: 60 }, audio: true, preferCurrentTab: true, selfBrowserSurface: 'include' });
+    const type = ['video/mp4;codecs=avc1', 'video/webm;codecs=vp9,opus', 'video/webm'].find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || '';
+    RECM.chunks = [];
+    RECM.rec = new MediaRecorder(stream, type ? { mimeType: type, videoBitsPerSecond: 8e6 } : undefined);
+    RECM.rec.ondataavailable = e => { if (e.data.size) RECM.chunks.push(e.data); };
+    RECM.rec.start(200);
+    return true;
+  } catch (e) { toast('録画が キャンセルされました'); return false; }
+}
+function stopTabRecording(name) {
+  return new Promise(res => {
+    const r = RECM.rec; if (!r) return res();
+    r.onstop = () => {
+      const type = r.mimeType || 'video/webm', ext = type.includes('mp4') ? 'mp4' : 'webm';
+      const blob = new Blob(RECM.chunks, { type });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = `nigi-${name}-${Date.now()}.${ext}`; document.body.appendChild(a); a.click(); a.remove();
+      r.stream.getTracks().forEach(t => t.stop()); RECM.rec = null;
+      toast(`動画を ほぞんしました（${ext}）`); res();
+    };
+    r.stop();
+  });
+}
+
+function setupRecMode() {
+  document.body.classList.add('rec');
+  const app = $('#app');
+  app.insertAdjacentHTML('beforeend', `
+    <div id="recCap" class="hidden"></div>
+    <div id="recTouch" class="hidden"></div>
+    <button id="recPill">撮影</button>
+    <div id="recPanel" class="hidden">
+      <div class="rp-head">撮影モード<small>セーブは本番と別です</small></div>
+      <div class="rp-opts">
+        <label><input type="checkbox" id="rp916" checked> 9:16の枠</label>
+        <label><input type="checkbox" id="rpUi"> ボタン類をかくす</label>
+      </div>
+      <div class="rp-list" id="rpList"></div>
+      <div class="rp-note">「録画」はPCのChromeで このタブを録画して ほぞんします。スマホは本体の画面収録で「再生」を使ってね。</div>
+      <button class="btn link" id="rpClose">とじる</button>
+    </div>`);
+  const list = $('#rpList');
+  REC_SCENES.forEach(sc => {
+    const row = document.createElement('div'); row.className = 'rp-row';
+    row.innerHTML = `<div><b>${sc.name}</b><small>${sc.desc}</small></div><button class="mini play">再生</button><button class="mini rec">録画</button>`;
+    row.querySelector('.play').addEventListener('click', () => runScene(sc, false));
+    row.querySelector('.rec').addEventListener('click', () => runScene(sc, true));
+    list.appendChild(row);
+  });
+  $('#recPill').addEventListener('click', () => show('#recPanel', true));
+  $('#rpClose').addEventListener('click', () => show('#recPanel', false));
+  const apply = () => {
+    document.body.classList.toggle('rec916', $('#rp916').checked);
+    document.body.classList.toggle('recNoUi', $('#rpUi').checked);
+    requestAnimationFrame(() => { resize(); measureTitle(); sizeGachaCanvas(); });
+  };
+  $('#rp916').addEventListener('change', apply); $('#rpUi').addEventListener('change', apply);
+  apply();
+  // 実際の指も表示する
+  app.addEventListener('pointerdown', e => { const r = app.getBoundingClientRect(); touchAt(e.clientX - r.left, e.clientY - r.top, true); }, true);
+  app.addEventListener('pointermove', e => { if (e.buttons) { const r = app.getBoundingClientRect(); touchAt(e.clientX - r.left, e.clientY - r.top, true); } }, true);
+  window.addEventListener('pointerup', () => { const el = $('#recTouch'); if (el) el.classList.remove('down'); setTimeout(touchHide, 250); });
+  document.querySelectorAll('#recPanel button, #recPill').forEach(b => b.addEventListener('pointerdown', e => e.stopPropagation()));
+}
+if (REC) setupRecMode();
 
 // ============================================================
 // ループ
