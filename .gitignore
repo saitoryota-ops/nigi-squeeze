@@ -1,0 +1,4 @@
+# 生成の候補・確認用（公開しない）
+tools/raw/
+__pycache__/
+qr_play.png
