@@ -151,6 +151,8 @@ function todayRule() {
   return RULES[h % RULES.length];
 }
 const DAILY_REWARD = 150;
+// スコア何点で1コインか（2026/10/06：20→80。コインガチャがプレミアムより出ないように）
+const COIN_DIV = 80;
 
 // ---- C. お店のレベルと着せかえ ----
 const LEVEL_XP = [0, 3000, 8000, 15000, 25000, 40000, 60000, 85000, 115000, 150000];
@@ -158,34 +160,34 @@ function shopLevel(xp = sv.xp) { let l = 1; while (l < LEVEL_XP.length && xp >= 
 const levelCoinBonus = l => 1 + 0.05 * (l - 1);   // Lv が上がるほどコイン +5%
 const DECOR = [
   { id: 'pink',      type: 'bg',    name: 'いちごミルクのお店', price: 0,   lv: 1, src: 'assets/ui/bg.jpg',           counterY: 0.6 },
-  { id: 'mint',      type: 'bg',    name: 'ミントのお店',       price: 300, lv: 2, src: 'assets/ui/bg_mint.jpg',      counterY: 0.56 },
-  { id: 'night',     type: 'bg',    name: 'よるのお店',         price: 600, lv: 4, src: 'assets/ui/bg_night.jpg',     counterY: 0.6 },
+  { id: 'mint',      type: 'bg',    name: 'ミントのお店',       price: 900, lv: 2, src: 'assets/ui/bg_mint.jpg',      counterY: 0.56 },
+  { id: 'night',     type: 'bg',    name: 'よるのお店',         price: 1800, lv: 4, src: 'assets/ui/bg_night.jpg',     counterY: 0.6 },
   { id: 'halloween', type: 'bg',    name: 'ハロウィンのお店',   price: 0,   lv: 1, src: 'assets/ui/bg_halloween.jpg', counterY: 0.65, event: 'halloween' },
-  { id: 'lavender',  type: 'bg',    name: 'ラベンダーのお店',   price: 400, lv: 2, src: 'assets/ui/bg_lavender.jpg',  counterY: 0.65 },
-  { id: 'lemon',     type: 'bg',    name: 'レモンのお店',       price: 400, lv: 3, src: 'assets/ui/bg_lemon.jpg',     counterY: 0.58 },
-  { id: 'soda',      type: 'bg',    name: 'ソーダのお店',       price: 500, lv: 3, src: 'assets/ui/bg_soda.jpg',      counterY: 0.62 },
-  { id: 'choco',     type: 'bg',    name: 'チョコのお店',       price: 600, lv: 4, src: 'assets/ui/bg_choco.jpg',     counterY: 0.6 },
-  { id: 'sakura',    type: 'bg',    name: 'さくらのお店',       price: 700, lv: 5, src: 'assets/ui/bg_sakura.jpg',    counterY: 0.64 },
-  { id: 'snow',      type: 'bg',    name: 'ゆきのお店',         price: 800, lv: 5, src: 'assets/ui/bg_snow.jpg',      counterY: 0.61 },
-  { id: 'sunset',    type: 'bg',    name: 'ゆうやけのお店',     price: 900, lv: 6, src: 'assets/ui/bg_sunset.jpg',    counterY: 0.59 },
-  { id: 'house',     type: 'bg',    name: 'おかしの家',         price: 1200, lv: 7, src: 'assets/ui/bg_house.jpg',    counterY: 0.67 },
+  { id: 'lavender',  type: 'bg',    name: 'ラベンダーのお店',   price: 1200, lv: 2, src: 'assets/ui/bg_lavender.jpg',  counterY: 0.65 },
+  { id: 'lemon',     type: 'bg',    name: 'レモンのお店',       price: 1200, lv: 3, src: 'assets/ui/bg_lemon.jpg',     counterY: 0.58 },
+  { id: 'soda',      type: 'bg',    name: 'ソーダのお店',       price: 1500, lv: 3, src: 'assets/ui/bg_soda.jpg',      counterY: 0.62 },
+  { id: 'choco',     type: 'bg',    name: 'チョコのお店',       price: 1800, lv: 4, src: 'assets/ui/bg_choco.jpg',     counterY: 0.6 },
+  { id: 'sakura',    type: 'bg',    name: 'さくらのお店',       price: 2100, lv: 5, src: 'assets/ui/bg_sakura.jpg',    counterY: 0.64 },
+  { id: 'snow',      type: 'bg',    name: 'ゆきのお店',         price: 2400, lv: 5, src: 'assets/ui/bg_snow.jpg',      counterY: 0.61 },
+  { id: 'sunset',    type: 'bg',    name: 'ゆうやけのお店',     price: 2700, lv: 6, src: 'assets/ui/bg_sunset.jpg',    counterY: 0.59 },
+  { id: 'house',     type: 'bg',    name: 'おかしの家',         price: 3600, lv: 7, src: 'assets/ui/bg_house.jpg',    counterY: 0.67 },
   { id: 'lace',      type: 'plate', name: 'レースのおさら',     price: 0,   lv: 1, src: 'assets/ui/plate.png' },
-  { id: 'berry',     type: 'plate', name: 'いちごのおさら',     price: 200, lv: 2, src: 'assets/ui/plate_berry.png' },
-  { id: 'mintplate', type: 'plate', name: 'ミントのおさら',     price: 300, lv: 3, src: 'assets/ui/plate_mint.png' },
-  { id: 'lavplate',  type: 'plate', name: 'ラベンダーのおさら', price: 200, lv: 2, src: 'assets/ui/plate_lav.png' },
-  { id: 'lemonplate', type: 'plate', name: 'レモンのおさら',    price: 250, lv: 3, src: 'assets/ui/plate_lemon.png' },
-  { id: 'chocoplate', type: 'plate', name: 'チョコのおさら',    price: 300, lv: 4, src: 'assets/ui/plate_choco.png' },
-  { id: 'heartplate', type: 'plate', name: 'ハートのおさら',    price: 400, lv: 4, src: 'assets/ui/plate_heart.png' },
-  { id: 'starplate', type: 'plate', name: 'ほしのおさら',       price: 400, lv: 5, src: 'assets/ui/plate_star.png' },
-  { id: 'goldplate', type: 'plate', name: 'きんのおさら',       price: 800, lv: 7, src: 'assets/ui/plate_gold.png' },
+  { id: 'berry',     type: 'plate', name: 'いちごのおさら',     price: 600, lv: 2, src: 'assets/ui/plate_berry.png' },
+  { id: 'mintplate', type: 'plate', name: 'ミントのおさら',     price: 900, lv: 3, src: 'assets/ui/plate_mint.png' },
+  { id: 'lavplate',  type: 'plate', name: 'ラベンダーのおさら', price: 600, lv: 2, src: 'assets/ui/plate_lav.png' },
+  { id: 'lemonplate', type: 'plate', name: 'レモンのおさら',    price: 750, lv: 3, src: 'assets/ui/plate_lemon.png' },
+  { id: 'chocoplate', type: 'plate', name: 'チョコのおさら',    price: 900, lv: 4, src: 'assets/ui/plate_choco.png' },
+  { id: 'heartplate', type: 'plate', name: 'ハートのおさら',    price: 1200, lv: 4, src: 'assets/ui/plate_heart.png' },
+  { id: 'starplate', type: 'plate', name: 'ほしのおさら',       price: 1200, lv: 5, src: 'assets/ui/plate_star.png' },
+  { id: 'goldplate', type: 'plate', name: 'きんのおさら',       price: 2400, lv: 7, src: 'assets/ui/plate_gold.png' },
   { id: 'normal',    type: 'bgm',   name: 'いつものBGM',        price: 0,   lv: 1, bgm: { bpm: 112, wave: 'triangle', prog: 0 } },
-  { id: 'calm',      type: 'bgm',   name: 'のんびりBGM',        price: 150, lv: 2, bgm: { bpm: 88,  wave: 'sine',     prog: 1 } },
-  { id: 'pop',       type: 'bgm',   name: 'ポップBGM',          price: 250, lv: 3, bgm: { bpm: 132, wave: 'square',   prog: 2 } },
-  { id: 'yume',      type: 'bgm',   name: 'ゆめかわBGM',        price: 150, lv: 2, bgm: { bpm: 92,  wave: 'sine',     prog: 3, oct: 24 } },
-  { id: 'matsuri',   type: 'bgm',   name: 'おまつりBGM',        price: 250, lv: 3, bgm: { bpm: 140, wave: 'square',   prog: 4, pat: 1 } },
-  { id: 'orgel',     type: 'bgm',   name: 'オルゴールBGM',      price: 300, lv: 4, bgm: { bpm: 104, wave: 'triangle', prog: 5, oct: 24, pat: 2 } },
-  { id: 'jazzy',     type: 'bgm',   name: 'カフェBGM',          price: 300, lv: 5, bgm: { bpm: 96,  wave: 'triangle', prog: 6, pat: 1 } },
-  { id: 'chip',      type: 'bgm',   name: 'ピコピコBGM',        price: 400, lv: 6, bgm: { bpm: 150, wave: 'square',   prog: 7, pat: 2 } },
+  { id: 'calm',      type: 'bgm',   name: 'のんびりBGM',        price: 450, lv: 2, bgm: { bpm: 88,  wave: 'sine',     prog: 1 } },
+  { id: 'pop',       type: 'bgm',   name: 'ポップBGM',          price: 750, lv: 3, bgm: { bpm: 132, wave: 'square',   prog: 2 } },
+  { id: 'yume',      type: 'bgm',   name: 'ゆめかわBGM',        price: 450, lv: 2, bgm: { bpm: 92,  wave: 'sine',     prog: 3, oct: 24 } },
+  { id: 'matsuri',   type: 'bgm',   name: 'おまつりBGM',        price: 750, lv: 3, bgm: { bpm: 140, wave: 'square',   prog: 4, pat: 1 } },
+  { id: 'orgel',     type: 'bgm',   name: 'オルゴールBGM',      price: 900, lv: 4, bgm: { bpm: 104, wave: 'triangle', prog: 5, oct: 24, pat: 2 } },
+  { id: 'jazzy',     type: 'bgm',   name: 'カフェBGM',          price: 900, lv: 5, bgm: { bpm: 96,  wave: 'triangle', prog: 6, pat: 1 } },
+  { id: 'chip',      type: 'bgm',   name: 'ピコピコBGM',        price: 1200, lv: 6, bgm: { bpm: 150, wave: 'square',   prog: 7, pat: 2 } },
   { id: 'spooky',    type: 'bgm',   name: 'ハロウィンBGM',      price: 0,   lv: 1, bgm: { bpm: 112, wave: 'triangle', prog: 8 }, event: 'halloween' },
 ];
 const DECOR_BY_ID = Object.fromEntries(DECOR.map(d => [d.id, d]));
@@ -1733,7 +1735,7 @@ function endGame() {
   G.pressing = false; G.pressValid = false; squelchStop();
   endFever();
   const lvBefore = shopLevel();
-  let coins = Math.floor(G.score / 20 * G.mods.coinMul * levelCoinBonus(lvBefore));
+  let coins = Math.floor(G.score / COIN_DIV * G.mods.coinMul * levelCoinBonus(lvBefore));
   const isBest = G.score > sv.best;
   // お店の経験値＝スコア
   sv.xp += G.score;
@@ -1787,7 +1789,7 @@ let gachaReturn = 'title';
 // ガチャは2種類：コイン（無料で貯まる・N/R中心）とプレミアム（ジェム・SR/SSRが出やすい・限定・天井）
 const GACHAS = {
   premium: { name: 'プレミアム', cur: 'gems', cost: 30, cost10: 300, rates: { N: 40, R: 35, SR: 20, SSR: 5 }, pickup: true, pity: 100 },
-  coin:    { name: 'コイン',     cur: 'coins', cost: 100, cost10: 1000, rates: { N: 70, R: 25, SR: 4.5, SSR: 0.5 }, pickup: false, pity: 0 },
+  coin:    { name: 'コイン',     cur: 'coins', cost: 300, cost10: 3000, rates: { N: 70, R: 25, SR: 4.5, SSR: 0.5 }, pickup: false, pity: 0 },
 };
 let gachaKind = 'premium';
 // ジェム（課金通貨）のアイコン。テキストの ◆ のかわりに使う
@@ -2291,8 +2293,8 @@ function claimPass() {
 // プレイ前ブースト
 // ============================================================
 const BOOSTS = [
-  { id: 'time',  name: '+5びょう',          desc: 'はじまりの時間が のびる', cur: 'coins', cost: 300, apply: m => { m.startTime += 5; } },
-  { id: 'score', name: 'スコア +10%',       desc: 'ぜんぶの点が ふえる',     cur: 'coins', cost: 500, apply: m => { m.scoreMul *= 1.1; } },
+  { id: 'time',  name: '+5びょう',          desc: 'はじまりの時間が のびる', cur: 'coins', cost: 100, apply: m => { m.startTime += 5; } },
+  { id: 'score', name: 'スコア +10%',       desc: 'ぜんぶの点が ふえる',     cur: 'coins', cost: 150, apply: m => { m.scoreMul *= 1.1; } },
   { id: 'kira',  name: 'キラ 2ばい',        desc: 'キラが でやすい',         cur: 'gems',  cost: 20,  apply: m => { m.shinyMul *= 2; } },
   { id: 'skill', name: '看板の特技 Lv+1',   desc: 'このプレイだけ 特技が強く', cur: 'gems',  cost: 30,  skill: 1 },
 ];
