@@ -2260,7 +2260,7 @@ function openRank() {
 const GEM_PACKS = [
   { gems: 60, bonus: 0, price: '¥160' },
   { gems: 300, bonus: 20, price: '¥800' },
-  { gems: 980, bonus: 100, price: '¥2,440' },
+  { gems: 980, bonus: 100, price: '¥2,400' },
   { gems: 3000, bonus: 500, price: '¥7,400' },
 ];
 const PASS = { price: '¥480', days: 30, daily: 20, first: 100 };
