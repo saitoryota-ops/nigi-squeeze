@@ -2611,7 +2611,7 @@ function makeShareImage() {
   // タイトル（リボンの上）
   if (UI_IMG.banner) { const bw = 1000, bh = bw * UI_IMG.banner.height / UI_IMG.banner.width; c.drawImage(UI_IMG.banner, (SW - bw) / 2, 130, bw, bh); }
   outlinedText(c, 'にぎにぎ', SW / 2, 150, 92, '#ffc2d4');
-  outlinedText(c, 'スクイーズ屋', SW / 2, 262, 104, '#fff7ee');
+  outlinedText(c, 'スクイーズ', SW / 2, 262, 104, '#fff7ee');
 
   // 主役のスクイーズ（お皿＋後光）
   const cx = SW / 2, baseY = 760, R = 175;
@@ -2654,7 +2654,7 @@ function makeShareImage() {
 
   // ハッシュタグ
   pill(c, cx, 1300, 560, 72, '#ffffff', '#e2648c', 5);
-  c.font = `800 38px ${FONT}`; c.fillStyle = '#e2648c'; c.textAlign = 'center'; c.fillText('#にぎにぎスクイーズ屋', cx, 1313);
+  c.font = `800 38px ${FONT}`; c.fillStyle = '#e2648c'; c.textAlign = 'center'; c.fillText('#にぎにぎスクイーズ', cx, 1313);
   return S;
 }
 async function shareResult() {
@@ -2664,7 +2664,7 @@ async function shareResult() {
   const file = new File([blob], 'nigi-squeeze.png', { type: 'image/png' });
   try {
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file], text: `にぎにぎスクイーズ屋で ${lastResult.score}てん！ #にぎにぎスクイーズ屋` });
+      await navigator.share({ files: [file], text: `にぎにぎスクイーズで ${lastResult.score}てん！ #にぎにぎスクイーズ` });
       return;
     }
   } catch (e) { if (e && e.name === 'AbortError') return; }
