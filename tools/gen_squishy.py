@@ -60,6 +60,13 @@ ITEMS = {
     "hw_pumpkin": ("pumpkin pudding, orange custard pudding shaped like a small pumpkin, caramel sauce on top, tiny green stem and leaf on top", "light blue"),
     "hw_ghost":   ("white ghost shaped marshmallow, soft and fluffy, round head with a wavy floating tail, small purple and orange sprinkles", "light blue"),
     "hw_bat":     ("purple macaron with two small black bat wings on the sides, white cream filling, round", "light yellow"),
+    # ---- おじゃまキャラ（からしの仲間）----
+    "ice":     ("melting soft serve ice cream cone, swirled vanilla ice cream dripping down, crispy waffle cone, small blue sweat drops", "light pink",
+                "worried cute face, small dot eyes, nervous sweat drop, wavy mouth"),
+    "onion":   ("round whole onion, shiny light purple and golden brown papery skin, small green sprout on top", "light blue",
+                "teary cute face, small dot eyes with big tears, wobbly mouth"),
+    "gum":     ("big round pink bubble gum balloon, shiny glossy pink bubble, a small piece of chewed pink gum at the bottom", "light blue",
+                "puffed cheeks cute face, small dot eyes, pouting"),
     "spicy":   ("bright red chili pepper ball, round, spicy, small yellow chili seeds, tiny green stem on top, tiny flames", "light blue",
                 "angry cute face, small dot eyes, angry eyebrows, pouting"),
 }
