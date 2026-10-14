@@ -48,7 +48,13 @@ ITEMS = {
     "fruitsand":("japanese fruit sandwich, fluffy white bread with whipped cream, strawberry and kiwi and orange cross section, triangle cut", "light blue"),
     "pancake":  ("fluffy souffle pancake stack, three thick jiggly pancakes, butter and maple syrup on top", "light blue"),
     "wataame":  ("rainbow cotton candy cloud, fluffy pastel rainbow colors, round puffy cloud shape, sparkles", "light yellow"),
+    # ---- 追加分（第3弾）----
+    "butter":   ("pat of butter, soft pale yellow butter cube with rounded corners, a little melting glossy on top, cute face on the front side", "light blue"),
+    "sushi":    ("salmon nigiri sushi, glossy orange salmon slice with white fat stripes draped over an oval block of white rice, cute face on the rice", "light blue"),
+    "shortcake":("strawberry shortcake slice, triangle slice of fluffy white sponge cake, whipped cream layers, strawberry slices in the cross section, one whole strawberry on top", "light blue"),
+    "parfait":  ("dreamy pastel strawberry parfait in a short round glass cup, layers of pink ice cream and whipped cream and berries, a macaron and a wafer stick on top, sparkles", "light yellow"),
     # ---- ハロウィン限定 ----
+    "hw_witch":   ("chocolate mont blanc cake wearing a small purple witch hat, swirled brown chestnut cream, small star sprinkles, round", "light blue"),
     "hw_candy":   ("candy corn jelly, translucent jelly in three layers of yellow orange and white, triangle shape", "light blue"),
     "hw_mummy":   ("mummy daifuku, round white mochi wrapped in cream colored bandage strips, one eye peeking, cute not scary", "light blue"),
     "hw_pumpkin": ("pumpkin pudding, orange custard pudding shaped like a small pumpkin, caramel sauce on top, tiny green stem and leaf on top", "light blue"),
