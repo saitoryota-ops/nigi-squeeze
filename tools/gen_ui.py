@@ -81,6 +81,10 @@ UI.update({
     "plate_heart": plate("heart shaped pastel pink", "light blue"),
     "plate_star":  plate("star pattern pastel blue plate with small yellow stars on the rim", "light pink"),
     "plate_gold":  plate("elegant cream white plate with a shiny gold rim and gold ornaments"),
+    "coin": (QUALITY + LOOK + "no humans, game item icon, a single cute shiny round gold coin, embossed small heart in the center, thick rim, "
+            "golden yellow, sparkling highlights, small sparkles around, front view, centered, "
+            "isolated, simple background, plain solid light blue background, no shadow",
+            NEG + ", multiple coins, stack, money bag, hand, text, letters", 1024, 1024),
     "gem": (QUALITY + LOOK + "no humans, game item icon, a single cute shiny faceted gemstone jewel, pastel purple and pink gradient, "
             "brilliant cut diamond shape, sparkling highlights, small sparkles around, front view, centered, "
             "isolated, simple background, plain solid light yellow background, no shadow",
