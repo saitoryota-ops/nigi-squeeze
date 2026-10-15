@@ -53,6 +53,8 @@ ITEMS = {
     "butter":   ("pat of butter, soft pale yellow butter cube with rounded corners, a little melting glossy on top, cute face on the front side", "light blue"),
     "sushi":    ("salmon nigiri sushi, glossy orange salmon slice with white fat stripes draped over an oval block of white rice, cute face on the rice", "light blue"),
     "shortcake":("strawberry shortcake slice, triangle slice of fluffy white sponge cake, whipped cream layers, strawberry slices in the cross section, one whole strawberry on top", "light blue"),
+    "chicken":  ("crispy golden brown fried chicken drumstick, crunchy craggy batter texture, small white bone handle sticking out, juicy, cute face on the meat", "light blue"),
+    "kujira":   ("big round chubby pastel blue whale, white belly, small sparkling water spout fountain on top of the head, tiny fins and tail, glossy jelly-like body, sparkles", "light pink"),
     "parfait":  ("dreamy pastel strawberry parfait in a short round glass cup, layers of pink ice cream and whipped cream and berries, a macaron and a wafer stick on top, sparkles", "light yellow"),
     # ---- ハロウィン限定 ----
     "hw_witch":   ("chocolate mont blanc cake wearing a small purple witch hat, swirled brown chestnut cream, small star sprinkles, round", "light blue"),
@@ -68,6 +70,10 @@ ITEMS = {
                 "teary cute face, small dot eyes with big tears, wobbly mouth"),
     "gum":     ("big round pink bubble gum balloon, shiny glossy pink bubble, a small piece of chewed pink gum at the bottom", "light blue",
                 "puffed cheeks cute face, small dot eyes, pouting"),
+    "kinako":  ("round soft mochi ball completely covered in thick golden yellow kinako soybean powder, powder dusting falling around it", "light blue",
+                "sneezing cute face, small dot eyes squeezed shut, tiny sneeze puff"),
+    "popcorn": ("big fluffy round popcorn character made of buttery white and golden popcorn pieces, small red and white striped paper cup at the bottom", "light green",
+                "excited cute face, small dot eyes, open mouth, motion lines"),
     "spicy":   ("bright red chili pepper ball, round, spicy, small yellow chili seeds, tiny green stem on top, tiny flames", "light blue",
                 "angry cute face, small dot eyes, angry eyebrows, pouting"),
 }

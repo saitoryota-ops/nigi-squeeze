@@ -81,10 +81,41 @@ UI.update({
     "plate_heart": plate("heart shaped pastel pink", "light blue"),
     "plate_star":  plate("star pattern pastel blue plate with small yellow stars on the rim", "light pink"),
     "plate_gold":  plate("elegant cream white plate with a shiny gold rim and gold ornaments"),
+    # おかしのお庭（もちもちルーム）
+    "garden_bg": (QUALITY + LOOK + "no humans, no characters, background art, scenery, a cute pastel candy garden seen from slightly above, "
+                  "soft green lawn filling the lower two thirds, a winding cookie stone path, pastel flower beds at the edges, "
+                  "small chocolate fence and candy trees far in the background, pale blue sky with fluffy clouds at the top, "
+                  "large empty open lawn in the center, symmetrical composition, cozy, storybook",
+                  NEG + ", people, animals, characters, food on lawn, cluttered center, text", 832, 1216),
+    "g_tree":   (QUALITY + LOOK + "no humans, game item, a single cute small tree with a fluffy pink and blue cotton candy crown and a candy cane striped trunk, "
+                 "full body, centered, isolated, simple background, plain solid light blue background, no shadow", NEG + ", multiple trees, ground, scenery", 1024, 1024),
+    "g_bench":  (QUALITY + LOOK + "no humans, game item, a single cute small garden bench made of cookies and biscuits with pink icing, front view slightly from above, "
+                 "centered, isolated, simple background, plain solid light blue background, no shadow", NEG + ", people, scenery, multiple benches", 1024, 1024),
+    "g_flowers": (QUALITY + LOOK + "no humans, game item, a small round flower bed with pastel tulips and daisies and two tiny cute honey bees, "
+                 "centered, isolated, simple background, plain solid light blue background, no shadow", NEG + ", people, scenery, house", 1024, 1024),
+    "g_honey":  (QUALITY + LOOK + "no humans, game item icon, a single cute round glass honey jar with golden honey and a wooden honey dipper, small cloth lid with a ribbon, "
+                 "sparkle, front view, centered, isolated, simple background, plain solid light blue background, no shadow", NEG + ", multiple jars, table, text, label text", 1024, 1024),
+    "g_swing": (QUALITY + LOOK + "no humans, game item, a cute small garden swing whose seat is a pink frosted donut hanging from a candy cane frame, centered, isolated, simple background, plain solid light blue background, no shadow", NEG + ", people, scenery, multiple objects, text", 1024, 1024),
+    "g_house": (QUALITY + LOOK + "no humans, game item, a cute tiny round pet house shaped like a strawberry shortcake with a small arched door, centered, isolated, simple background, plain solid light blue background, no shadow", NEG + ", people, scenery, multiple objects, text", 1024, 1024),
+    "g_lamp": (QUALITY + LOOK + "no humans, game item, a cute garden street lamp shaped like a tall swirl lollipop with a warm glowing light, centered, isolated, simple background, plain solid light blue background, no shadow", NEG + ", people, scenery, multiple objects, text", 1024, 1024),
+    "g_fountain": (QUALITY + LOOK + "no humans, game item, a cute small chocolate fountain with three tiers and flowing melted chocolate, pastel pink base, centered, isolated, simple background, plain solid light blue background, no shadow", NEG + ", people, scenery, multiple objects, text", 1024, 1024),
+    "g_mushroom": (QUALITY + LOOK + "no humans, game item, two cute marshmallow mushrooms with pink and white spotted caps, centered, isolated, simple background, plain solid light blue background, no shadow", NEG + ", people, scenery, multiple objects, text", 1024, 1024),
+    "g_pond": (QUALITY + LOOK + "no humans, game item, a small round pastel soda pond with fizzy bubbles and a lily pad made of a mint cookie, seen from slightly above, centered, isolated, simple background, plain solid light blue background, no shadow", NEG + ", people, scenery, multiple objects, text", 1024, 1024),
+    "g_s1_trophy": (QUALITY + LOOK + "no humans, game item, a cute garden statue of a big shiny golden trophy cup decorated with pastel macarons and a pink ribbon, on a small cream pedestal, centered, isolated, simple background, plain solid light blue background, no shadow", NEG + ", people, scenery, multiple objects, text, letters", 1024, 1024),
+    "g_s1_crown": (QUALITY + LOOK + "no humans, game item, a cute small round garden gazebo shaped like a golden crown made of cookies with pastel lilac frosting and tiny jewels, centered, isolated, simple background, plain solid light blue background, no shadow", NEG + ", people, scenery, multiple objects, text, letters", 1024, 1024),
+    # シーズン1の報酬（ハイスコア／ライバル）
+    "plate_s1a":   plate("pastel pink plate with a shiny gold rim and a cute pattern of small gold trophies and stars on the rim"),
+    "plate_s1b":   plate("pastel lilac purple plate with a shiny gold rim and a cute pattern of small gold crowns on the rim", "light yellow"),
     "coin": (QUALITY + LOOK + "no humans, game item icon, a single cute shiny round gold coin, embossed small heart in the center, thick rim, "
             "golden yellow, sparkling highlights, small sparkles around, front view, centered, "
             "isolated, simple background, plain solid light blue background, no shadow",
             NEG + ", multiple coins, stack, money bag, hand, text, letters", 1024, 1024),
+    "snack": (QUALITY + LOOK + "no humans, game item icon, a single cute round cookie with pink heart icing and colorful sprinkles, "
+              "golden brown, sparkle, front view, centered, isolated, simple background, plain solid light blue background, no shadow",
+              NEG + ", multiple cookies, plate, hand, text, letters", 1024, 1024),
+    "drink": (QUALITY + LOOK + "no humans, game item icon, a single cute small round glass potion bottle filled with glowing pink drink, "
+              "cork stopper, a white heart shaped label, sparkles, front view, centered, isolated, simple background, plain solid light yellow background, no shadow",
+              NEG + ", multiple bottles, cup, hand, text, letters, label text", 1024, 1024),
     "gem": (QUALITY + LOOK + "no humans, game item icon, a single cute shiny faceted gemstone jewel, pastel purple and pink gradient, "
             "brilliant cut diamond shape, sparkling highlights, small sparkles around, front view, centered, "
             "isolated, simple background, plain solid light yellow background, no shadow",
