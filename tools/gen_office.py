@@ -15,6 +15,7 @@ STAFF = {
     "release":  "golden taiyaki fish cake character riding a tiny pastel rocket",
     "liveops":  "rice ball onigiri character holding a small pastel megaphone, cheerful",
     "legal":    "white mochi daifuku character wearing tiny glasses, holding a small book with a heart",
+    "director": "chocolate cupcake character with pink frosting and a cherry on top, wearing a tiny golden crown and a small headset microphone, holding a little baton, confident and kind",
 }
 BG = ("masterpiece, best quality, score_9, score_8, safe, no humans, kawaii, soft pastel colors, soft shading, clean thin brown lineart, cozy, "
       "interior of a cute small game studio office, front view, pastel pink and mint walls, wooden floor, several small cute desks with computers, "
