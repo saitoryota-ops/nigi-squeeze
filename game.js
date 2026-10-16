@@ -14,7 +14,7 @@ const SQUISHIES = [
   { id: 'melon',    name: 'さくもちメロンパン', rarity: 'R',   shape: 'round',   body: '#dcef92', shade: '#a9c75a', deco: 'grid',      soft: 0.9 },
   { id: 'dubai',    name: 'ドバチョコもち',     rarity: 'R',   shape: 'dome',    body: '#b07a52', shade: '#5b341f', deco: 'pistachio', ink: '#2a1208', soft: 0.85 },
   { id: 'sago',     name: 'つぶつぶサゴ',       rarity: 'R',   shape: 'round',   body: '#ffd9e6', shade: '#f2a9c2', deco: 'pearls',    soft: 1.1 },
-  { id: 'yoajon',   name: 'もりもりヨアジョン', rarity: 'R',   shape: 'dome',    body: '#fffdf6', shade: '#e9e1cf', deco: 'berries',   soft: 1.0 },
+  { id: 'yoajon',   name: 'もりもりヨーグルトアイス', rarity: 'R',   shape: 'dome',    body: '#fffdf6', shade: '#e9e1cf', deco: 'berries',   soft: 1.0 },
   { id: 'mari',     name: 'クリームマリトッツォ', rarity: 'SR', shape: 'round',  body: '#eaa95e', shade: '#c27a33', deco: 'cream',     soft: 1.05 },
   { id: 'mizu',     name: 'みずまんじゅう',     rarity: 'SR',  shape: 'dome',    body: 'rgba(170,222,255,0.78)', shade: 'rgba(110,180,235,0.85)', deco: 'water', soft: 1.35 },
   { id: 'kuma',     name: 'きらきらゼリーくま', rarity: 'SSR', shape: 'bear',    body: '#ff9cc2', shade: '#e8679a', deco: 'sparkle',   soft: 1.15 },
